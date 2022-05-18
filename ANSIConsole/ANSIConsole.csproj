@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -7,7 +7,6 @@
     <Description>Lightweight and flexible text formatter for creating beautiful console applications.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/WilliamRagstad/ANSIConsole</PackageProjectUrl>
-    <PackageIcon>logo_cropped.png</PackageIcon>
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/WilliamRagstad/ANSIConsole</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
@@ -16,12 +15,5 @@
     <PackageId>ANSI.Console</PackageId>
     <Version>2.5.0</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="..\assets\logo_cropped.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
 
 </Project>
