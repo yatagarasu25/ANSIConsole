@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net60</TargetFramework>
     <Authors>Dotch</Authors>
     <Company />
     <Description>Lightweight and flexible text formatter for creating beautiful console applications.</Description>

@@ -1,21 +1,20 @@
-﻿using System;
+﻿namespace ANSIConsole;
 
-namespace ANSIConsole
+using System;
+
+[Flags]
+public enum ANSIFormatting
 {
-	[Flags]
-	public enum ANSIFormatting
-	{
-		None = 0,
-		Bold = 1 << 0,
-		Faint = 1 << 1,
-		Italic = 1 << 2,
-		Underlined = 1 << 3,
-		Overlined = 1 << 4,
-		Blink = 1 << 5,
-		Inverted = 1 << 6,
-		StrikeThrough = 1 << 7,
-		LowerCase = 1 << 8,
-		UpperCase = 1 << 9,
-		Clear = 1 << 10,
-	}
+	None = 0,
+	Bold = 1 << 0,
+	Faint = 1 << 1,
+	Italic = 1 << 2,
+	Underlined = 1 << 3,
+	Overlined = 1 << 4,
+	Blink = 1 << 5,
+	Inverted = 1 << 6,
+	StrikeThrough = 1 << 7,
+	LowerCase = 1 << 8,
+	UpperCase = 1 << 9,
+	Clear = 1 << 10,
 }
