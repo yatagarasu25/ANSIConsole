@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net60</TargetFramework>
+    <TargetFrameworks>net472;net50;net60</TargetFrameworks>
     <Authors>Dotch</Authors>
     <Company />
     <Description>Lightweight and flexible text formatter for creating beautiful console applications.</Description>
@@ -14,6 +14,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>ANSI.Console</PackageId>
     <Version>2.5.0</Version>
+
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
 </Project>

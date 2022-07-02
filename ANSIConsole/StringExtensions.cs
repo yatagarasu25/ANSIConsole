@@ -62,7 +62,7 @@ public static class StringExtensions
 	public static ANSIString Color(this string text, Color color, int alpha) => Color(ToANSI(text), System.Drawing.Color.FromArgb(alpha, color));
 	public static ANSIString Color(this ANSIString text, Color color, int alpha) => Color(text, System.Drawing.Color.FromArgb(alpha, color));
 	public static ANSIString Color(this string text, string nameOrHex) => Color(ToANSI(text), nameOrHex);
-	public static ANSIString Color(this ANSIString text, string nameOrHex) => Color(text, nameOrHex.StartsWith('#') ?
+	public static ANSIString Color(this ANSIString text, string nameOrHex) => Color(text, nameOrHex.StartsWith("#") ?
 		System.Drawing.ColorTranslator.FromHtml(nameOrHex) :
 		System.Drawing.Color.FromName(nameOrHex));
 
@@ -79,7 +79,7 @@ public static class StringExtensions
 	public static ANSIString Background(this string text, Color color, int alpha) => Background(ToANSI(text), System.Drawing.Color.FromArgb(alpha, color));
 	public static ANSIString Background(this ANSIString text, Color color, int alpha) => Background(text, System.Drawing.Color.FromArgb(alpha, color));
 	public static ANSIString Background(this string text, string nameOrHex) => Background(ToANSI(text), nameOrHex);
-	public static ANSIString Background(this ANSIString text, string nameOrHex) => Background(text, nameOrHex.StartsWith('#') ?
+	public static ANSIString Background(this ANSIString text, string nameOrHex) => Background(text, nameOrHex.StartsWith("#") ?
 		System.Drawing.ColorTranslator.FromHtml(nameOrHex) :
 		System.Drawing.Color.FromName(nameOrHex));
 

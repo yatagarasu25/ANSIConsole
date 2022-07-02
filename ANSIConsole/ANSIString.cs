@@ -11,7 +11,7 @@ public class ANSIString
 	private Color? _colorBackground;
 	private float? _opacity;
 	private ANSIFormatting _formatting;
-	
+
 	public ANSIString(string text)
 	{
 		_text = text;
@@ -32,7 +32,7 @@ public class ANSIString
 		_formatting &= ~rem;
 		return this;
 	}
-	
+
 	internal Color GetForegroundColor() => _colorForeground ?? FromConsoleColor(Console.ForegroundColor);
 	internal Color GetBackgroundColor() => _colorBackground ?? FromConsoleColor(Console.BackgroundColor);
 
@@ -86,7 +86,7 @@ public class ANSIString
 		if (_formatting.HasFlag(ANSIFormatting.Blink)) result = ANSI.Blink + result;
 		if (_formatting.HasFlag(ANSIFormatting.Inverted)) result = ANSI.Inverted + result;
 		if (_formatting.HasFlag(ANSIFormatting.StrikeThrough)) result = ANSI.StrikeThrough + result;
-		
+
 		if (_opacity != null) result = ANSI.Foreground(Interpolate(_colorBackground ?? FromConsoleColor(Console.BackgroundColor), _colorForeground ?? FromConsoleColor(Console.ForegroundColor), (float)_opacity)) + result;
 		else if (_colorForeground != null) result = ANSI.Foreground((Color)_colorForeground) + result;
 		if (_colorBackground != null) result = ANSI.Background((Color)_colorBackground) + result;
