@@ -1,5 +1,6 @@
 ﻿namespace ANSIConsole;
 
+using System;
 using System.Drawing;
 using System.Linq;
 
@@ -27,6 +28,31 @@ public static class ANSI
 	public static string StrikeThrough = SGR(9);
 	public static string Overlined = SGR(53);
 
+	public static byte[] ConsoleColors = new byte[] {
+		30, // Black,
+		34, // DarkBlue,
+		32, // DarkGreen,
+		36, // DarkCyan,
+		31, // DarkRed,
+		35, // DarkMagenta,
+		33, // DarkYellow,
+		37, // Gray,
+		90, // DarkGray,
+		94, // Blue,
+		92, // Green,
+		96, // Cyan,
+		91, // Red,
+		95, // Magenta,
+		93, // Yellow,
+		97, // White
+	};
+
+	public static string Color(ConsoleColor? fg, ConsoleColor? bg)
+		=> SGR(new byte[] { fg != null ? ConsoleColors[(int)fg.Value] : (byte)0
+			              , bg != null ? (byte)(ConsoleColors[(int)bg.Value] + 10) : (byte)0 }
+			.Where(c => c != 0).ToArray());
+	public static string Foreground(ConsoleColor color) => SGR(ConsoleColors[(int)color]);
+	public static string Background(ConsoleColor color) => SGR((byte)(ConsoleColors[(int)color] + 10));
 	public static string Foreground(Color color) => SGR(38, 2, color.R, color.G, color.B);
 	public static string Background(Color color) => SGR(48, 2, color.R, color.G, color.B);
 	public static string Hyperlink(string text, string link) => $"\u001b]8;;{link}\a{text}\u001b]8;;\a";

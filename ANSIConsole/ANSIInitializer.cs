@@ -1,6 +1,7 @@
 ﻿namespace ANSIConsole;
 
 using System;
+using System.Runtime.InteropServices;
 using static NativeFunctions;
 
 public class ANSIInitializer : IDisposable
@@ -24,16 +25,19 @@ public class ANSIInitializer : IDisposable
 	/// <returns>true if initialization was successful</returns>
 	public ANSIInitializer(bool printError = true)
 	{
-		var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-		if (!GetConsoleMode(iStdOut, out uint originalConsoleMode))
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 		{
-			if (printError) Console.WriteLine("failed to get output console mode");
-		}
+			var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+			if (!GetConsoleMode(iStdOut, out uint originalConsoleMode))
+			{
+				if (printError) Console.WriteLine("failed to get output console mode");
+			}
 
-		var consoleMode = originalConsoleMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
-		if (!SetConsoleMode(iStdOut, consoleMode))
-		{
-			if (printError) Console.WriteLine($"failed to set output console mode, error code: {GetLastError()}");
+			var consoleMode = originalConsoleMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
+			if (!SetConsoleMode(iStdOut, consoleMode))
+			{
+				if (printError) Console.WriteLine($"failed to set output console mode, error code: {GetLastError()}");
+			}
 		}
 
 		Enabled = true;
@@ -41,7 +45,10 @@ public class ANSIInitializer : IDisposable
 
 	public void Dispose()
 	{
-		var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleMode(iStdOut, originalConsoleMode);
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		{
+			var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleMode(iStdOut, originalConsoleMode);
+		}
 	}
 }

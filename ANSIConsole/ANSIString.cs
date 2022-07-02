@@ -9,6 +9,8 @@ public class ANSIString
 	private string _hyperlink;
 	private Color? _colorForeground;
 	private Color? _colorBackground;
+	private ConsoleColor? _consoleColorForeground;
+	private ConsoleColor? _consoleColorBackground;
 	private float? _opacity;
 	private ANSIFormatting _formatting;
 
@@ -39,24 +41,28 @@ public class ANSIString
 	internal ANSIString SetForegroundColor(Color color)
 	{
 		_colorForeground = color;
+		_consoleColorForeground = null;
 		return this;
 	}
 
 	internal ANSIString SetForegroundColor(ConsoleColor color)
 	{
-		_colorForeground = FromConsoleColor(color);
+		_colorForeground = null;
+		_consoleColorForeground = ((int)color != -1) ? color : null;
 		return this;
 	}
 
 	internal ANSIString SetBackgroundColor(Color color)
 	{
 		_colorBackground = color;
+		_consoleColorBackground = null;
 		return this;
 	}
 
 	internal ANSIString SetBackgroundColor(ConsoleColor color)
 	{
-		_colorBackground = FromConsoleColor(color);
+		_colorBackground = null;
+		_consoleColorBackground = ((int)color != -1) ? color : null;
 		return this;
 	}
 
@@ -87,9 +93,14 @@ public class ANSIString
 		if (_formatting.HasFlag(ANSIFormatting.Inverted)) result = ANSI.Inverted + result;
 		if (_formatting.HasFlag(ANSIFormatting.StrikeThrough)) result = ANSI.StrikeThrough + result;
 
-		if (_opacity != null) result = ANSI.Foreground(Interpolate(_colorBackground ?? FromConsoleColor(Console.BackgroundColor), _colorForeground ?? FromConsoleColor(Console.ForegroundColor), (float)_opacity)) + result;
-		else if (_colorForeground != null) result = ANSI.Foreground((Color)_colorForeground) + result;
-		if (_colorBackground != null) result = ANSI.Background((Color)_colorBackground) + result;
+		if (_consoleColorForeground != null) result = ANSI.Foreground(_consoleColorForeground.Value) + result;
+		else
+		{
+			if (_opacity != null) result = ANSI.Foreground(Interpolate(_colorBackground ?? FromConsoleColor(Console.BackgroundColor), _colorForeground ?? FromConsoleColor(Console.ForegroundColor), (float)_opacity)) + result;
+			else if (_colorForeground != null) result = ANSI.Foreground(_colorForeground.Value) + result;
+		}
+		if (_consoleColorBackground != null) result = ANSI.Background(_consoleColorBackground.Value) + result;
+		else if (_colorBackground != null) result = ANSI.Background(_colorBackground.Value) + result;
 		if (_hyperlink != null) result = ANSI.Hyperlink(result, _hyperlink);
 		if (_formatting.HasFlag(ANSIFormatting.Clear)) result += ANSI.Clear;
 		return result;
