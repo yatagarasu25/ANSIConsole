@@ -1,6 +1,7 @@
 ﻿namespace ANSIConsole;
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 public class ANSIString
@@ -84,24 +85,35 @@ public class ANSIString
 		string result = _text;
 		if (_formatting.HasFlag(ANSIFormatting.UpperCase)) result = result.ToUpper();
 		if (_formatting.HasFlag(ANSIFormatting.LowerCase)) result = result.ToLower();
-		if (_formatting.HasFlag(ANSIFormatting.Bold)) result = ANSI.Bold + result;
-		if (_formatting.HasFlag(ANSIFormatting.Faint)) result = ANSI.Faint + result;
-		if (_formatting.HasFlag(ANSIFormatting.Italic)) result = ANSI.Italic + result;
-		if (_formatting.HasFlag(ANSIFormatting.Underlined)) result = ANSI.Underlined + result;
-		if (_formatting.HasFlag(ANSIFormatting.Overlined)) result = ANSI.Overlined + result;
-		if (_formatting.HasFlag(ANSIFormatting.Blink)) result = ANSI.Blink + result;
-		if (_formatting.HasFlag(ANSIFormatting.Inverted)) result = ANSI.Inverted + result;
-		if (_formatting.HasFlag(ANSIFormatting.StrikeThrough)) result = ANSI.StrikeThrough + result;
 
-		if (_consoleColorForeground != null) result = ANSI.Foreground(_consoleColorForeground.Value) + result;
-		else
+		List<byte> parameters = new List<byte>();
+		if (_formatting.HasFlag(ANSIFormatting.Bold)) parameters.Add(ANSI.nBold);
+		if (_formatting.HasFlag(ANSIFormatting.Faint)) parameters.Add(ANSI.nFaint);
+		if (_formatting.HasFlag(ANSIFormatting.Italic)) parameters.Add(ANSI.nItalic);
+		if (_formatting.HasFlag(ANSIFormatting.Underlined)) parameters.Add(ANSI.nUnderlined);
+		if (_formatting.HasFlag(ANSIFormatting.Overlined)) parameters.Add(ANSI.nOverlined);
+		if (_formatting.HasFlag(ANSIFormatting.Blink)) parameters.Add(ANSI.nBlink);
+		if (_formatting.HasFlag(ANSIFormatting.Inverted)) parameters.Add(ANSI.nInverted);
+		if (_formatting.HasFlag(ANSIFormatting.StrikeThrough)) parameters.Add(ANSI.nStrikeThrough);
+
+		if (_consoleColorForeground != null) parameters.Add(ANSI.ForegroundColor4bit(_consoleColorForeground.Value));
+		if (_consoleColorBackground != null) parameters.Add(ANSI.BackgroundColor4bit(_consoleColorBackground.Value));
+
+		if (parameters.Count > 0)
+			result = ANSI.SGR(parameters.ToArray()) + result;
+
+		if (_colorForeground != null || _colorBackground != null)
 		{
-			if (_opacity != null) result = ANSI.Foreground(Interpolate(_colorBackground ?? FromConsoleColor(Console.BackgroundColor), _colorForeground ?? FromConsoleColor(Console.ForegroundColor), (float)_opacity)) + result;
+			if (_opacity != null)
+				result = ANSI.Foreground(
+					Interpolate(_colorBackground.Value, _colorForeground.Value, _opacity.Value)
+				) + result;
 			else if (_colorForeground != null) result = ANSI.Foreground(_colorForeground.Value) + result;
+			else if (_colorBackground != null) result = ANSI.Background(_colorBackground.Value) + result;
 		}
-		if (_consoleColorBackground != null) result = ANSI.Background(_consoleColorBackground.Value) + result;
-		else if (_colorBackground != null) result = ANSI.Background(_colorBackground.Value) + result;
+
 		if (_hyperlink != null) result = ANSI.Hyperlink(result, _hyperlink);
+
 		if (_formatting.HasFlag(ANSIFormatting.Clear)) result += ANSI.Clear;
 		return result;
 	}
