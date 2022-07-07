@@ -16,6 +16,10 @@
     <Version>2.5.0</Version>
 
     <LangVersion>latest</LangVersion>
+
+    <SignAssembly>True</SignAssembly>
+
+    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
 </Project>
