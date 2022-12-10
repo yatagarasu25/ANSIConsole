@@ -1,6 +1,7 @@
 ﻿namespace ANSIConsole;
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 public class ANSIString
@@ -9,9 +10,11 @@ public class ANSIString
 	private string _hyperlink;
 	private Color? _colorForeground;
 	private Color? _colorBackground;
+	private ConsoleColor? _consoleColorForeground;
+	private ConsoleColor? _consoleColorBackground;
 	private float? _opacity;
 	private ANSIFormatting _formatting;
-	
+
 	public ANSIString(string text)
 	{
 		_text = text;
@@ -32,31 +35,35 @@ public class ANSIString
 		_formatting &= ~rem;
 		return this;
 	}
-	
+
 	internal Color GetForegroundColor() => _colorForeground ?? FromConsoleColor(Console.ForegroundColor);
 	internal Color GetBackgroundColor() => _colorBackground ?? FromConsoleColor(Console.BackgroundColor);
 
 	internal ANSIString SetForegroundColor(Color color)
 	{
 		_colorForeground = color;
+		_consoleColorForeground = null;
 		return this;
 	}
 
 	internal ANSIString SetForegroundColor(ConsoleColor color)
 	{
-		_colorForeground = FromConsoleColor(color);
+		_colorForeground = null;
+		_consoleColorForeground = ((int)color != -1) ? color : null;
 		return this;
 	}
 
 	internal ANSIString SetBackgroundColor(Color color)
 	{
 		_colorBackground = color;
+		_consoleColorBackground = null;
 		return this;
 	}
 
 	internal ANSIString SetBackgroundColor(ConsoleColor color)
 	{
-		_colorBackground = FromConsoleColor(color);
+		_colorBackground = null;
+		_consoleColorBackground = ((int)color != -1) ? color : null;
 		return this;
 	}
 
@@ -78,19 +85,35 @@ public class ANSIString
 		string result = _text;
 		if (_formatting.HasFlag(ANSIFormatting.UpperCase)) result = result.ToUpper();
 		if (_formatting.HasFlag(ANSIFormatting.LowerCase)) result = result.ToLower();
-		if (_formatting.HasFlag(ANSIFormatting.Bold)) result = ANSI.Bold + result;
-		if (_formatting.HasFlag(ANSIFormatting.Faint)) result = ANSI.Faint + result;
-		if (_formatting.HasFlag(ANSIFormatting.Italic)) result = ANSI.Italic + result;
-		if (_formatting.HasFlag(ANSIFormatting.Underlined)) result = ANSI.Underlined + result;
-		if (_formatting.HasFlag(ANSIFormatting.Overlined)) result = ANSI.Overlined + result;
-		if (_formatting.HasFlag(ANSIFormatting.Blink)) result = ANSI.Blink + result;
-		if (_formatting.HasFlag(ANSIFormatting.Inverted)) result = ANSI.Inverted + result;
-		if (_formatting.HasFlag(ANSIFormatting.StrikeThrough)) result = ANSI.StrikeThrough + result;
-		
-		if (_opacity != null) result = ANSI.Foreground(Interpolate(_colorBackground ?? FromConsoleColor(Console.BackgroundColor), _colorForeground ?? FromConsoleColor(Console.ForegroundColor), (float)_opacity)) + result;
-		else if (_colorForeground != null) result = ANSI.Foreground((Color)_colorForeground) + result;
-		if (_colorBackground != null) result = ANSI.Background((Color)_colorBackground) + result;
+
+		List<byte> parameters = new List<byte>();
+		if (_formatting.HasFlag(ANSIFormatting.Bold)) parameters.Add(ANSI.nBold);
+		if (_formatting.HasFlag(ANSIFormatting.Faint)) parameters.Add(ANSI.nFaint);
+		if (_formatting.HasFlag(ANSIFormatting.Italic)) parameters.Add(ANSI.nItalic);
+		if (_formatting.HasFlag(ANSIFormatting.Underlined)) parameters.Add(ANSI.nUnderlined);
+		if (_formatting.HasFlag(ANSIFormatting.Overlined)) parameters.Add(ANSI.nOverlined);
+		if (_formatting.HasFlag(ANSIFormatting.Blink)) parameters.Add(ANSI.nBlink);
+		if (_formatting.HasFlag(ANSIFormatting.Inverted)) parameters.Add(ANSI.nInverted);
+		if (_formatting.HasFlag(ANSIFormatting.StrikeThrough)) parameters.Add(ANSI.nStrikeThrough);
+
+		if (_consoleColorForeground != null) parameters.Add(ANSI.ForegroundColor4bit(_consoleColorForeground.Value));
+		if (_consoleColorBackground != null) parameters.Add(ANSI.BackgroundColor4bit(_consoleColorBackground.Value));
+
+		if (parameters.Count > 0)
+			result = ANSI.SGR(parameters.ToArray()) + result;
+
+		if (_colorForeground != null || _colorBackground != null)
+		{
+			if (_opacity != null)
+				result = ANSI.Foreground(
+					Interpolate(_colorBackground.Value, _colorForeground.Value, _opacity.Value)
+				) + result;
+			else if (_colorForeground != null) result = ANSI.Foreground(_colorForeground.Value) + result;
+			else if (_colorBackground != null) result = ANSI.Background(_colorBackground.Value) + result;
+		}
+
 		if (_hyperlink != null) result = ANSI.Hyperlink(result, _hyperlink);
+
 		if (_formatting.HasFlag(ANSIFormatting.Clear)) result += ANSI.Clear;
 		return result;
 	}
