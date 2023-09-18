@@ -31,12 +31,15 @@ public class ANSIInitializer : IDisposable
 			if (!GetConsoleMode(iStdOut, out uint originalConsoleMode))
 			{
 				if (printError) Console.WriteLine("failed to get output console mode");
+				return;
 			}
 
-			var consoleMode = originalConsoleMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
+			var consoleMode = originalConsoleMode
+				| ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
 			if (!SetConsoleMode(iStdOut, consoleMode))
 			{
 				if (printError) Console.WriteLine($"failed to set output console mode, error code: {GetLastError()}");
+				return;
 			}
 		}
 

@@ -3,6 +3,7 @@
 using System;
 using System.Drawing;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 public static class ANSI
 {
@@ -17,6 +18,10 @@ public static class ANSI
 	/// </summary>
 	public const string CSI = ESC + "[";
 	public static string SGR(params byte[] codes) => $"{CSI}{string.Join(";", codes.Select(c => c.ToString()))}m";
+
+	public static string ESCRegex
+		= $"{Regex.Escape(CSI)}(?<data>[\x30-\x3F]*[\x20-\x2F]*)(?<csicode>[\x40-\x7E])"
+		+ $"|{Regex.Escape(ESC)}(?<data>[\x40-\x5F])";
 
 	public static byte nClear = 0;
 	public static byte nBold = 1;
